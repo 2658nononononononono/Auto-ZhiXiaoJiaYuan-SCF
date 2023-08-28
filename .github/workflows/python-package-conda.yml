@@ -1,0 +1,34 @@
+name: 名称：使用 Conda 的 Python 包
+
+on: [上：[推]]
+
+jobs:
+  build-linux:
+    runs-on:     运行：ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses:     - 使用：actions/checkout@v3
+    - name:     - 名称：设置Python 3.10
+      uses:       使用：actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    - name:     - name: 将 conda 添加到系统路径
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name:     - 名称：安装依赖项
+      run: |
+        conda env update --file environment.yml --name base
+    - name:     - 名称：Lint with flake8
+      run: |
+        conda install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name:     - 名称：使用 pytest 进行测试
+      run: |
+        conda install pytest
+        pytest
